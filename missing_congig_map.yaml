@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: nginx 
+        command: ["/bin/sh", "-c", "ls /app && sleep infinity"]
+
+        volumeMounts:
+        - name: my-volume
+          mountPath: /app
+      volumes:
+      - name: my-volume
+        configMap:
+          name: my-config
+

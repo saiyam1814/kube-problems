@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-failure-test
+  namespace: failme
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deploy-failure
+  template:
+    metadata:
+      labels:
+        app: deploy-failure
+    spec:
+      containers:
+      - name: deploy-failure-container
+        image: nginx
+        resources:
+          limits:
+            memory: "100Mi"
+        command: ["/bin/sh", "-c"]
+        args: ["stress --vm 1 --vm-bytes 256M"]
+        securityContext:
+          capabilities:
+            add:
+              - SYS_ADMIN
+              - SYS_RESOURCE
+      initContainers:
+      - name: install-stress
+        image: ubuntu
+        command: ["/bin/bash", "-c"]
+        args: ["apt-get update && apt-get install -y stress"]
